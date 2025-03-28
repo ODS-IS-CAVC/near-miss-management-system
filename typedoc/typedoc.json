@@ -1,0 +1,25 @@
+{
+  "entryPoints": [
+    "../packages/backend/src",
+    "../packages/batch-import/src",
+    "../packages/common/src",
+    "../packages/log/src",
+    "../packages/frontend/src"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "../docs",
+  "exclude": [
+    "../packages/backend/src/main.ts",
+    "../packages/backend/src/app.module.ts",
+    "../packages/backend/src/serverless.ts",
+    "../packages/batch-import/src/main.ts",
+    "../packages/batch-import/src/main-local.ts", //ローカルでバッチ動作確認用ファイル
+    "../packages/batch-import/src/modules/import/import.controller.ts", //ローカルでバッチ動作確認用ファイル
+    "../packages/frontend/src/main.ts",
+    "../packages/frontend/src/app/**",
+    "../packages/**/*/spec/**"
+  ],
+  "excludePrivate": false,
+  "excludeProtected": false,
+  "readme": "../README.md"
+}

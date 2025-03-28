@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf8" />
+  <title>C-3-2 ニアミス管理システムAPI</title>
+  <!-- needed for adaptive design -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+  <script src="https://cdn.redocly.com/redoc/v2.4.0/bundles/redoc.standalone.js"></script><style data-styled="true" data-styled-version="6.1.16">.leUrRG{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.leUrRG{width:100%;padding:40px 40px;}}/*!sc*/
+data-styled.g4[id="sc-glJfXD"]{content:"leUrRG,"}/*!sc*/
+.kZEgJl{padding:40px 0;}/*!sc*/
+.kZEgJl:last-child{min-height:calc(100vh + 1px);}/*!sc*/
+.kZEgJl>.kZEgJl:last-child{min-height:initial;}/*!sc*/
+@media print,screen and (max-width: 75rem){.kZEgJl{padding:0;}}/*!sc*/
+.eCkzqu{padding:40px 0;position:relative;}/*!sc*/
+.eCkzqu:last-child{min-height:calc(100vh + 1px);}/*!sc*/
+.eCkzqu>.eCkzqu:last-child{min-height:initial;}/*!sc*/
+@media print,screen and (max-width: 75rem){.eCkzqu{padding:0;}}/*!sc*/
+.eCkzqu:not(:last-of-type):after{position:absolute;bottom:0;width:100%;display:block;content:'';border-bottom:1px solid rgba(0, 0, 0, 0.2);}/*!sc*/
+data-styled.g5[id="sc-dOfePm"]{content:"kZEgJl,eCkzqu,"}/*!sc*/
+.egscYh{width:40%;color:#ffffff;background-color:#263238;padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.egscYh{width:100%;padding:40px 40px;}}/*!sc*/
+data-styled.g6[id="sc-jgmqJh"]{content:"egscYh,"}/*!sc*/
+.brdjDi{background-color:#263238;}/*!sc*/
+data-styled.g7[id="sc-gIIpAQ"]{content:"brdjDi,"}/*!sc*/
+.gyiXze{display:flex;width:100%;padding:0;}/*!sc*/
+@media print,screen and (max-width: 75rem){.gyiXze{flex-direction:column;}}/*!sc*/
+data-styled.g8[id="sc-kFkjun"]{content:"gyiXze,"}/*!sc*/
+.cKUApr{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#333333;}/*!sc*/
+data-styled.g9[id="sc-ihGilW"]{content:"cKUApr,"}/*!sc*/
+.kRxete{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;margin:0 0 20px;}/*!sc*/
+data-styled.g10[id="sc-jRLeyu"]{content:"kRxete,"}/*!sc*/
+.dhJZBt{color:#ffffff;}/*!sc*/
+data-styled.g12[id="sc-jOTjWM"]{content:"dhJZBt,"}/*!sc*/
+.cCiGzA{border-bottom:1px solid rgba(38, 50, 56, 0.3);margin:1em 0 1em 0;color:rgba(38, 50, 56, 0.5);font-weight:normal;text-transform:uppercase;font-size:0.929em;line-height:20px;}/*!sc*/
+data-styled.g13[id="sc-cOPLXt"]{content:"cCiGzA,"}/*!sc*/
+.jnKjlt{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.jnKjlt:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+h1:hover>.jnKjlt::before,h2:hover>.jnKjlt::before,.jnKjlt:hover::before{visibility:visible;}/*!sc*/
+data-styled.g14[id="sc-jXuTBK"]{content:"jnKjlt,"}/*!sc*/
+.fDJPYf{height:18px;width:18px;min-width:18px;vertical-align:middle;float:right;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.jSKTTR{height:1.5em;width:1.5em;min-width:1.5em;vertical-align:middle;float:left;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.jSKTTR polygon{fill:#1d8127;}/*!sc*/
+.dOdtJx{height:20px;width:20px;min-width:20px;vertical-align:middle;float:right;transition:transform 0.2s ease-out;transform:rotateZ(0);}/*!sc*/
+.dOdtJx polygon{fill:white;}/*!sc*/
+.zhzlX{height:18px;width:18px;min-width:18px;vertical-align:middle;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+data-styled.g15[id="sc-cXrvCr"]{content:"fDJPYf,jSKTTR,dOdtJx,zhzlX,"}/*!sc*/
+.rDKIb{border-left:1px solid #7c7cbb;box-sizing:border-box;position:relative;padding:10px 10px 10px 0;}/*!sc*/
+@media screen and (max-width: 50rem){.rDKIb{display:block;overflow:hidden;}}/*!sc*/
+tr:first-of-type>.rDKIb,tr.last>.rDKIb{border-left-width:0;background-position:top left;background-repeat:no-repeat;background-size:1px 100%;}/*!sc*/
+tr:first-of-type>.rDKIb{background-image:linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 22px,
+      #7c7cbb 22px,
+      #7c7cbb 100%
+    );}/*!sc*/
+tr.last>.rDKIb{background-image:linear-gradient(
+      to bottom,
+      #7c7cbb 0%,
+      #7c7cbb 22px,
+      transparent 22px,
+      transparent 100%
+    );}/*!sc*/
+tr.last+tr>.rDKIb{border-left-color:transparent;}/*!sc*/
+tr.last:first-child>.rDKIb{background:none;border-left-color:transparent;}/*!sc*/
+data-styled.g18[id="sc-lnQFQe"]{content:"rDKIb,"}/*!sc*/
+.dRrKge{vertical-align:top;line-height:20px;white-space:nowrap;font-size:13px;font-family:Courier,monospace;}/*!sc*/
+.dRrKge.deprecated{text-decoration:line-through;color:#707070;}/*!sc*/
+data-styled.g20[id="sc-dUwGTt"]{content:"dRrKge,"}/*!sc*/
+.fjmjSR{border-bottom:1px solid #9fb4be;padding:10px 0;width:75%;box-sizing:border-box;}/*!sc*/
+tr.expanded .fjmjSR{border-bottom:none;}/*!sc*/
+@media screen and (max-width: 50rem){.fjmjSR{padding:0 20px;border-bottom:none;border-left:1px solid #7c7cbb;}tr.last>.fjmjSR{border-left:none;}}/*!sc*/
+data-styled.g21[id="sc-eUzcTs"]{content:"fjmjSR,"}/*!sc*/
+.ibYoJt{color:#7c7cbb;font-family:Courier,monospace;margin-right:10px;}/*!sc*/
+.ibYoJt::before{content:'';display:inline-block;vertical-align:middle;width:10px;height:1px;background:#7c7cbb;}/*!sc*/
+.ibYoJt::after{content:'';display:inline-block;vertical-align:middle;width:1px;background:#7c7cbb;height:7px;}/*!sc*/
+data-styled.g22[id="sc-gKcHA-D"]{content:"ibYoJt,"}/*!sc*/
+.fahMGi{border-collapse:separate;border-radius:3px;font-size:14px;border-spacing:0;width:100%;}/*!sc*/
+.fahMGi >tr{vertical-align:middle;}/*!sc*/
+@media screen and (max-width: 50rem){.fahMGi{display:block;}.fahMGi >tr,.fahMGi >tbody>tr{display:block;}}/*!sc*/
+@media screen and (max-width: 50rem) and (-ms-high-contrast:none){.fahMGi td{float:left;width:100%;}}/*!sc*/
+.fahMGi .sc-hKfdAC,.fahMGi .sc-hKfdAC .sc-hKfdAC .sc-hKfdAC,.fahMGi .sc-hKfdAC .sc-hKfdAC .sc-hKfdAC .sc-hKfdAC .sc-hKfdAC{margin:1em;margin-right:0;background:#fafafa;}/*!sc*/
+.fahMGi .sc-hKfdAC .sc-hKfdAC,.fahMGi .sc-hKfdAC .sc-hKfdAC .sc-hKfdAC .sc-hKfdAC,.fahMGi .sc-hKfdAC .sc-hKfdAC .sc-hKfdAC .sc-hKfdAC .sc-hKfdAC .sc-hKfdAC{background:#ffffff;}/*!sc*/
+data-styled.g24[id="sc-eagvWJ"]{content:"fahMGi,"}/*!sc*/
+.gTnidh >ul{list-style:none;padding:0;margin:0;margin:0 -5px;}/*!sc*/
+.gTnidh >ul >li{padding:5px 10px;display:inline-block;background-color:#11171a;border-bottom:1px solid rgba(0, 0, 0, 0.5);cursor:pointer;text-align:center;outline:none;color:#ccc;margin:0 5px 5px 5px;border:1px solid #07090b;border-radius:5px;min-width:60px;font-size:0.9em;font-weight:bold;}/*!sc*/
+.gTnidh >ul >li.react-tabs__tab--selected{color:#333333;background:#ffffff;}/*!sc*/
+.gTnidh >ul >li.react-tabs__tab--selected:focus{outline:auto;}/*!sc*/
+.gTnidh >ul >li:only-child{flex:none;min-width:100px;}/*!sc*/
+.gTnidh >ul >li.tab-success{color:#1d8127;}/*!sc*/
+.gTnidh >ul >li.tab-redirect{color:#ffa500;}/*!sc*/
+.gTnidh >ul >li.tab-info{color:#87ceeb;}/*!sc*/
+.gTnidh >ul >li.tab-error{color:#d41f1c;}/*!sc*/
+.gTnidh >.react-tabs__tab-panel{background:#11171a;}/*!sc*/
+.gTnidh >.react-tabs__tab-panel>div,.gTnidh >.react-tabs__tab-panel>pre{padding:20px;margin:0;}/*!sc*/
+.gTnidh >.react-tabs__tab-panel>div>pre{padding:0;}/*!sc*/
+data-styled.g30[id="sc-bwSFLc"]{content:"gTnidh,"}/*!sc*/
+.ewwVxe code[class*='language-'],.ewwVxe pre[class*='language-']{text-shadow:0 -0.1em 0.2em black;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none;}/*!sc*/
+@media print{.ewwVxe code[class*='language-'],.ewwVxe pre[class*='language-']{text-shadow:none;}}/*!sc*/
+.ewwVxe pre[class*='language-']{padding:1em;margin:0.5em 0;overflow:auto;}/*!sc*/
+.ewwVxe .token.comment,.ewwVxe .token.prolog,.ewwVxe .token.doctype,.ewwVxe .token.cdata{color:hsl(30, 20%, 50%);}/*!sc*/
+.ewwVxe .token.punctuation{opacity:0.7;}/*!sc*/
+.ewwVxe .namespace{opacity:0.7;}/*!sc*/
+.ewwVxe .token.property,.ewwVxe .token.tag,.ewwVxe .token.number,.ewwVxe .token.constant,.ewwVxe .token.symbol{color:#4a8bb3;}/*!sc*/
+.ewwVxe .token.boolean{color:#e64441;}/*!sc*/
+.ewwVxe .token.selector,.ewwVxe .token.attr-name,.ewwVxe .token.string,.ewwVxe .token.char,.ewwVxe .token.builtin,.ewwVxe .token.inserted{color:#a0fbaa;}/*!sc*/
+.ewwVxe .token.selector+a,.ewwVxe .token.attr-name+a,.ewwVxe .token.string+a,.ewwVxe .token.char+a,.ewwVxe .token.builtin+a,.ewwVxe .token.inserted+a,.ewwVxe .token.selector+a:visited,.ewwVxe .token.attr-name+a:visited,.ewwVxe .token.string+a:visited,.ewwVxe .token.char+a:visited,.ewwVxe .token.builtin+a:visited,.ewwVxe .token.inserted+a:visited{color:#4ed2ba;text-decoration:underline;}/*!sc*/
+.ewwVxe .token.property.string{color:white;}/*!sc*/
+.ewwVxe .token.operator,.ewwVxe .token.entity,.ewwVxe .token.url,.ewwVxe .token.variable{color:hsl(40, 90%, 60%);}/*!sc*/
+.ewwVxe .token.atrule,.ewwVxe .token.attr-value,.ewwVxe .token.keyword{color:hsl(350, 40%, 70%);}/*!sc*/
+.ewwVxe .token.regex,.ewwVxe .token.important{color:#e90;}/*!sc*/
+.ewwVxe .token.important,.ewwVxe .token.bold{font-weight:bold;}/*!sc*/
+.ewwVxe .token.italic{font-style:italic;}/*!sc*/
+.ewwVxe .token.entity{cursor:help;}/*!sc*/
+.ewwVxe .token.deleted{color:red;}/*!sc*/
+data-styled.g32[id="sc-dZnbom"]{content:"ewwVxe,"}/*!sc*/
+.jwxgAi{opacity:0.7;transition:opacity 0.3s ease;text-align:right;}/*!sc*/
+.jwxgAi:focus-within{opacity:1;}/*!sc*/
+.jwxgAi >button{background-color:transparent;border:0;color:inherit;padding:2px 10px;font-family:Roboto,sans-serif;font-size:14px;line-height:1.5em;cursor:pointer;outline:0;}/*!sc*/
+.jwxgAi >button :hover,.jwxgAi >button :focus{background:rgba(255, 255, 255, 0.1);}/*!sc*/
+data-styled.g33[id="sc-ljIkKL"]{content:"jwxgAi,"}/*!sc*/
+.fQPNEB{position:relative;}/*!sc*/
+data-styled.g37[id="sc-eeWQrC"]{content:"fQPNEB,"}/*!sc*/
+.bFzZBc{margin-left:10px;text-transform:none;font-size:0.929em;color:black;}/*!sc*/
+data-styled.g41[id="sc-dSrrqH"]{content:"bFzZBc,"}/*!sc*/
+.kiTOLP{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.kiTOLP p:last-child{margin-bottom:0;}/*!sc*/
+.kiTOLP h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#32329f;margin-top:0;}/*!sc*/
+.kiTOLP h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.kiTOLP code{color:#e53935;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.kiTOLP pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.kiTOLP pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.kiTOLP pre code:before,.kiTOLP pre code:after{content:none;}/*!sc*/
+.kiTOLP blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.kiTOLP img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.kiTOLP ul,.kiTOLP ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.kiTOLP ul ul,.kiTOLP ol ul,.kiTOLP ul ol,.kiTOLP ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.kiTOLP table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.kiTOLP table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.kiTOLP table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.kiTOLP table th,.kiTOLP table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.kiTOLP table th{text-align:left;font-weight:bold;}/*!sc*/
+.kiTOLP .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.kiTOLP .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.kiTOLP h1:hover>.share-link::before,.kiTOLP h2:hover>.share-link::before,.kiTOLP .share-link:hover::before{visibility:visible;}/*!sc*/
+.kiTOLP a{text-decoration:auto;color:#32329f;}/*!sc*/
+.kiTOLP a:visited{color:#32329f;}/*!sc*/
+.kiTOLP a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+.gxENBN{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.gxENBN p:last-child{margin-bottom:0;}/*!sc*/
+.gxENBN p:first-child{margin-top:0;}/*!sc*/
+.gxENBN p:last-child{margin-bottom:0;}/*!sc*/
+.gxENBN h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#32329f;margin-top:0;}/*!sc*/
+.gxENBN h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.gxENBN code{color:#e53935;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.gxENBN pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.gxENBN pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.gxENBN pre code:before,.gxENBN pre code:after{content:none;}/*!sc*/
+.gxENBN blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.gxENBN img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.gxENBN ul,.gxENBN ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.gxENBN ul ul,.gxENBN ol ul,.gxENBN ul ol,.gxENBN ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.gxENBN table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.gxENBN table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.gxENBN table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.gxENBN table th,.gxENBN table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.gxENBN table th{text-align:left;font-weight:bold;}/*!sc*/
+.gxENBN .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.gxENBN .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.gxENBN h1:hover>.share-link::before,.gxENBN h2:hover>.share-link::before,.gxENBN .share-link:hover::before{visibility:visible;}/*!sc*/
+.gxENBN a{text-decoration:auto;color:#32329f;}/*!sc*/
+.gxENBN a:visited{color:#32329f;}/*!sc*/
+.gxENBN a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+.jZPdSZ{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.jZPdSZ p:last-child{margin-bottom:0;}/*!sc*/
+.jZPdSZ p:first-child{margin-top:0;}/*!sc*/
+.jZPdSZ p:last-child{margin-bottom:0;}/*!sc*/
+.jZPdSZ p{display:inline-block;}/*!sc*/
+.jZPdSZ h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#32329f;margin-top:0;}/*!sc*/
+.jZPdSZ h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.jZPdSZ code{color:#e53935;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.jZPdSZ pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.jZPdSZ pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.jZPdSZ pre code:before,.jZPdSZ pre code:after{content:none;}/*!sc*/
+.jZPdSZ blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.jZPdSZ img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.jZPdSZ ul,.jZPdSZ ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.jZPdSZ ul ul,.jZPdSZ ol ul,.jZPdSZ ul ol,.jZPdSZ ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.jZPdSZ table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.jZPdSZ table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.jZPdSZ table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.jZPdSZ table th,.jZPdSZ table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.jZPdSZ table th{text-align:left;font-weight:bold;}/*!sc*/
+.jZPdSZ .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.jZPdSZ .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.jZPdSZ h1:hover>.share-link::before,.jZPdSZ h2:hover>.share-link::before,.jZPdSZ .share-link:hover::before{visibility:visible;}/*!sc*/
+.jZPdSZ a{text-decoration:auto;color:#32329f;}/*!sc*/
+.jZPdSZ a:visited{color:#32329f;}/*!sc*/
+.jZPdSZ a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+data-styled.g42[id="sc-eStNqG"]{content:"kiTOLP,gxENBN,jZPdSZ,"}/*!sc*/
+.dcgeal{display:inline;}/*!sc*/
+data-styled.g43[id="sc-ecLbSZ"]{content:"dcgeal,"}/*!sc*/
+.kochun{position:relative;}/*!sc*/
+data-styled.g44[id="sc-fcNxSY"]{content:"kochun,"}/*!sc*/
+.gzsuAn:hover>.sc-ljIkKL{opacity:1;}/*!sc*/
+data-styled.g49[id="sc-fowSIr"]{content:"gzsuAn,"}/*!sc*/
+.hnBcqa{font-family:Courier,monospace;font-size:13px;white-space:pre;contain:content;overflow-x:auto;}/*!sc*/
+.hnBcqa .redoc-json code>.collapser{display:none;pointer-events:none;}/*!sc*/
+.hnBcqa .callback-function{color:gray;}/*!sc*/
+.hnBcqa .collapser:after{content:'-';cursor:pointer;}/*!sc*/
+.hnBcqa .collapsed>.collapser:after{content:'+';cursor:pointer;}/*!sc*/
+.hnBcqa .ellipsis:after{content:' … ';}/*!sc*/
+.hnBcqa .collapsible{margin-left:2em;}/*!sc*/
+.hnBcqa .hoverable{padding-top:1px;padding-bottom:1px;padding-left:2px;padding-right:2px;border-radius:2px;}/*!sc*/
+.hnBcqa .hovered{background-color:rgba(235, 238, 249, 1);}/*!sc*/
+.hnBcqa .collapser{background-color:transparent;border:0;color:#fff;font-family:Courier,monospace;font-size:13px;padding-right:6px;padding-left:6px;padding-top:0;padding-bottom:0;display:flex;align-items:center;justify-content:center;width:15px;height:15px;position:absolute;top:4px;left:-1.5em;cursor:default;user-select:none;-webkit-user-select:none;padding:2px;}/*!sc*/
+.hnBcqa .collapser:focus{outline-color:#fff;outline-style:dotted;outline-width:1px;}/*!sc*/
+.hnBcqa ul{list-style-type:none;padding:0px;margin:0px 0px 0px 26px;}/*!sc*/
+.hnBcqa li{position:relative;display:block;}/*!sc*/
+.hnBcqa .hoverable{display:inline-block;}/*!sc*/
+.hnBcqa .selected{outline-style:solid;outline-width:1px;outline-style:dotted;}/*!sc*/
+.hnBcqa .collapsed>.collapsible{display:none;}/*!sc*/
+.hnBcqa .ellipsis{display:none;}/*!sc*/
+.hnBcqa .collapsed>.ellipsis{display:inherit;}/*!sc*/
+data-styled.g50[id="sc-gozoIq"]{content:"hnBcqa,"}/*!sc*/
+.cnTPdi{padding:0.9em;background-color:rgba(38,50,56,0.4);margin:0 0 10px 0;display:block;font-family:Montserrat,sans-serif;font-size:0.929em;line-height:1.5em;}/*!sc*/
+data-styled.g51[id="sc-buNqiq"]{content:"cnTPdi,"}/*!sc*/
+.gEDIwZ{font-family:Montserrat,sans-serif;font-size:12px;position:absolute;z-index:1;top:-11px;left:12px;font-weight:600;color:rgba(255,255,255,0.7);}/*!sc*/
+data-styled.g52[id="sc-fKfBHT"]{content:"gEDIwZ,"}/*!sc*/
+.bVwklo{position:relative;}/*!sc*/
+data-styled.g53[id="sc-brVvGI"]{content:"bVwklo,"}/*!sc*/
+.eQHTDF{margin-top:15px;}/*!sc*/
+data-styled.g56[id="sc-eTAtz"]{content:"eQHTDF,"}/*!sc*/
+.fQpXEM.deprecated span.property-name{text-decoration:line-through;color:#707070;}/*!sc*/
+.fQpXEM button{background-color:transparent;border:0;outline:0;font-size:13px;font-family:Courier,monospace;cursor:pointer;padding:0;color:#333333;}/*!sc*/
+.fQpXEM button:focus{font-weight:600;}/*!sc*/
+.fQpXEM .sc-cXrvCr{height:1.1em;width:1.1em;}/*!sc*/
+.fQpXEM .sc-cXrvCr polygon{fill:#666;}/*!sc*/
+data-styled.g57[id="sc-hcfdRk"]{content:"fQpXEM,"}/*!sc*/
+.hQswnt{vertical-align:middle;font-size:13px;line-height:20px;}/*!sc*/
+data-styled.g58[id="sc-cbFRR"]{content:"hQswnt,"}/*!sc*/
+.fowkLL{color:rgba(102,102,102,0.9);}/*!sc*/
+data-styled.g59[id="sc-cQSRAa"]{content:"fowkLL,"}/*!sc*/
+.kmboKU{color:#666;}/*!sc*/
+data-styled.g60[id="sc-hglcZD"]{content:"kmboKU,"}/*!sc*/
+.cngCif{color:#d41f1c;font-size:0.9em;font-weight:normal;margin-left:20px;line-height:1;}/*!sc*/
+data-styled.g62[id="sc-hMWYck"]{content:"cngCif,"}/*!sc*/
+.iZKBpI{border-radius:2px;word-break:break-word;background-color:rgba(51,51,51,0.05);color:rgba(51,51,51,0.9);padding:0 5px;border:1px solid rgba(51,51,51,0.1);font-family:Courier,monospace;}/*!sc*/
++{margin-left:0;}/*!sc*/
+data-styled.g66[id="sc-chKWNQ"]{content:"iZKBpI,"}/*!sc*/
+.jAwxyA{border-radius:2px;background-color:rgba(104,104,207,0.05);color:rgba(50,50,159,0.9);margin:0 5px;padding:0 5px;border:1px solid rgba(50,50,159,0.1);}/*!sc*/
++{margin-left:0;}/*!sc*/
+data-styled.g68[id="sc-eXqXva"]{content:"jAwxyA,"}/*!sc*/
+.iENrAO{margin-top:0;margin-bottom:0.5em;}/*!sc*/
+data-styled.g92[id="sc-kdGFeD"]{content:"iENrAO,"}/*!sc*/
+.grbqCX{width:9ex;display:inline-block;height:13px;line-height:13px;background-color:#333;border-radius:3px;background-repeat:no-repeat;background-position:6px 4px;font-size:7px;font-family:Verdana,sans-serif;color:white;text-transform:uppercase;text-align:center;font-weight:bold;vertical-align:middle;margin-right:6px;margin-top:2px;}/*!sc*/
+.grbqCX.get{background-color:#2F8132;}/*!sc*/
+.grbqCX.post{background-color:#186FAF;}/*!sc*/
+.grbqCX.put{background-color:#95507c;}/*!sc*/
+.grbqCX.options{background-color:#947014;}/*!sc*/
+.grbqCX.patch{background-color:#bf581d;}/*!sc*/
+.grbqCX.delete{background-color:#cc3333;}/*!sc*/
+.grbqCX.basic{background-color:#707070;}/*!sc*/
+.grbqCX.link{background-color:#07818F;}/*!sc*/
+.grbqCX.head{background-color:#A23DAD;}/*!sc*/
+.grbqCX.hook{background-color:#32329f;}/*!sc*/
+.grbqCX.schema{background-color:#707070;}/*!sc*/
+data-styled.g100[id="sc-irjSKf"]{content:"grbqCX,"}/*!sc*/
+.iDUoBi{margin:0;padding:0;}/*!sc*/
+.iDUoBi:first-child{padding-bottom:32px;}/*!sc*/
+.sc-kTgNvW .sc-kTgNvW{font-size:0.929em;}/*!sc*/
+.duzLBj{margin:0;padding:0;display:none;}/*!sc*/
+.duzLBj:first-child{padding-bottom:32px;}/*!sc*/
+.sc-kTgNvW .sc-kTgNvW{font-size:0.929em;}/*!sc*/
+data-styled.g101[id="sc-kTgNvW"]{content:"iDUoBi,duzLBj,"}/*!sc*/
+.dPFZel{list-style:none inside none;overflow:hidden;text-overflow:ellipsis;padding:0;}/*!sc*/
+data-styled.g102[id="sc-buGIZP"]{content:"dPFZel,"}/*!sc*/
+.bSLObm{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;display:flex;justify-content:space-between;font-family:Montserrat,sans-serif;font-size:0.929em;text-transform:none;background-color:#fafafa;}/*!sc*/
+.bSLObm:hover{color:#32329f;background-color:#e1e1e1;}/*!sc*/
+.bSLObm .sc-cXrvCr{height:1.5em;width:1.5em;}/*!sc*/
+.bSLObm .sc-cXrvCr polygon{fill:#333333;}/*!sc*/
+.kzYPJk{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;display:flex;justify-content:space-between;font-family:Montserrat,sans-serif;background-color:#fafafa;}/*!sc*/
+.kzYPJk:hover{color:#32329f;background-color:#ededed;}/*!sc*/
+.kzYPJk .sc-cXrvCr{height:1.5em;width:1.5em;}/*!sc*/
+.kzYPJk .sc-cXrvCr polygon{fill:#333333;}/*!sc*/
+data-styled.g103[id="sc-dXLCDc"]{content:"bSLObm,kzYPJk,"}/*!sc*/
+.kXFfzE{display:inline-block;vertical-align:middle;width:calc(100% - 38px);overflow:hidden;text-overflow:ellipsis;}/*!sc*/
+data-styled.g104[id="sc-fOHhFR"]{content:"kXFfzE,"}/*!sc*/
+.jFSsqK{font-size:0.8em;margin-top:10px;text-align:center;position:fixed;width:260px;bottom:0;background:#fafafa;}/*!sc*/
+.jFSsqK a,.jFSsqK a:visited,.jFSsqK a:hover{color:#333333!important;padding:5px 0;border-top:1px solid #e1e1e1;text-decoration:none;display:flex;align-items:center;justify-content:center;}/*!sc*/
+.jFSsqK img{width:15px;margin-right:5px;}/*!sc*/
+@media screen and (max-width: 50rem){.jFSsqK{width:100%;}}/*!sc*/
+data-styled.g105[id="sc-kMKgPS"]{content:"jFSsqK,"}/*!sc*/
+.ePBxvF{cursor:pointer;position:relative;margin-bottom:5px;}/*!sc*/
+data-styled.g111[id="sc-dTdpwD"]{content:"ePBxvF,"}/*!sc*/
+.ioopTP{font-family:Courier,monospace;margin-left:10px;flex:1;overflow-x:hidden;text-overflow:ellipsis;}/*!sc*/
+data-styled.g112[id="sc-ieSqsC"]{content:"ioopTP,"}/*!sc*/
+.bgPLGr{outline:0;color:inherit;width:100%;text-align:left;cursor:pointer;padding:10px 30px 10px 20px;border-radius:4px 4px 0 0;background-color:#11171a;display:flex;white-space:nowrap;align-items:center;border:1px solid transparent;border-bottom:0;transition:border-color 0.25s ease;}/*!sc*/
+.bgPLGr ..sc-ieSqsC{color:#ffffff;}/*!sc*/
+.bgPLGr:focus{box-shadow:inset 0 2px 2px rgba(0, 0, 0, 0.45),0 2px 0 rgba(128, 128, 128, 0.25);}/*!sc*/
+data-styled.g113[id="sc-ligLZB"]{content:"bgPLGr,"}/*!sc*/
+.hMeoaw{font-size:0.929em;line-height:20px;background-color:#2F8132;color:#ffffff;padding:3px 10px;text-transform:uppercase;font-family:Montserrat,sans-serif;margin:0;}/*!sc*/
+.iAOvt{font-size:0.929em;line-height:20px;background-color:#95507c;color:#ffffff;padding:3px 10px;text-transform:uppercase;font-family:Montserrat,sans-serif;margin:0;}/*!sc*/
+data-styled.g114[id="sc-eeA-dwE"]{content:"hMeoaw,iAOvt,"}/*!sc*/
+.kCxvuD{position:absolute;width:100%;z-index:100;background:#fafafa;color:#263238;box-sizing:border-box;box-shadow:0 0 6px rgba(0, 0, 0, 0.33);overflow:hidden;border-bottom-left-radius:4px;border-bottom-right-radius:4px;transition:all 0.25s ease;visibility:hidden;transform:translateY(-50%) scaleY(0);}/*!sc*/
+data-styled.g115[id="sc-dMGIQz"]{content:"kCxvuD,"}/*!sc*/
+.sxQGy{padding:10px;}/*!sc*/
+data-styled.g116[id="sc-hYvJMy"]{content:"sxQGy,"}/*!sc*/
+.iPVodL{padding:5px;border:1px solid #ccc;background:#fff;word-break:break-all;color:#32329f;}/*!sc*/
+.iPVodL >span{color:#333333;}/*!sc*/
+data-styled.g117[id="sc-lbKftx"]{content:"iPVodL,"}/*!sc*/
+.gpUsgs{text-transform:lowercase;margin-left:0;line-height:1.5em;}/*!sc*/
+data-styled.g118[id="sc-dYdwQA"]{content:"gpUsgs,"}/*!sc*/
+.owcub{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#1d8127;background-color:rgba(29,129,39,0.07);}/*!sc*/
+.owcub:focus{outline:auto #1d8127;}/*!sc*/
+.imrKRb{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#d41f1c;background-color:rgba(212,31,28,0.07);cursor:default;}/*!sc*/
+.imrKRb:focus{outline:auto #d41f1c;}/*!sc*/
+.imrKRb::before{content:"—";font-weight:bold;width:1.5em;text-align:center;display:inline-block;vertical-align:top;}/*!sc*/
+.imrKRb:focus{outline:0;}/*!sc*/
+.glwmXl{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#1d8127;background-color:rgba(29,129,39,0.07);cursor:default;}/*!sc*/
+.glwmXl:focus{outline:auto #1d8127;}/*!sc*/
+.glwmXl::before{content:"—";font-weight:bold;width:1.5em;text-align:center;display:inline-block;vertical-align:top;}/*!sc*/
+.glwmXl:focus{outline:0;}/*!sc*/
+data-styled.g120[id="sc-jZkJda"]{content:"owcub,imrKRb,glwmXl,"}/*!sc*/
+.eSFldv{vertical-align:top;}/*!sc*/
+data-styled.g123[id="sc-dNrSaK"]{content:"eSFldv,"}/*!sc*/
+.ePsDFX{font-size:1.3em;padding:0.2em 0;margin:3em 0 1.1em;color:#333333;font-weight:normal;}/*!sc*/
+data-styled.g124[id="sc-fRzchz"]{content:"ePsDFX,"}/*!sc*/
+.jpSYGt{margin-bottom:30px;}/*!sc*/
+data-styled.g129[id="sc-bvlCfQ"]{content:"jpSYGt,"}/*!sc*/
+.cRcNbY{user-select:none;width:20px;height:20px;align-self:center;display:flex;flex-direction:column;color:#32329f;}/*!sc*/
+data-styled.g130[id="sc-dzsMmF"]{content:"cRcNbY,"}/*!sc*/
+.dYKZdB{width:260px;background-color:#fafafa;overflow:hidden;display:flex;flex-direction:column;backface-visibility:hidden;height:100vh;position:sticky;position:-webkit-sticky;top:0;}/*!sc*/
+@media screen and (max-width: 50rem){.dYKZdB{position:fixed;z-index:20;width:100%;background:#fafafa;display:none;}}/*!sc*/
+@media print{.dYKZdB{display:none;}}/*!sc*/
+data-styled.g131[id="sc-dQluUV"]{content:"dYKZdB,"}/*!sc*/
+.hXMdUD{outline:none;user-select:none;background-color:#f2f2f2;color:#32329f;display:none;cursor:pointer;position:fixed;right:20px;z-index:100;border-radius:50%;box-shadow:0 0 20px rgba(0, 0, 0, 0.3);bottom:44px;width:60px;height:60px;padding:0 20px;}/*!sc*/
+@media screen and (max-width: 50rem){.hXMdUD{display:flex;}}/*!sc*/
+.hXMdUD svg{color:#0065FB;}/*!sc*/
+@media print{.hXMdUD{display:none;}}/*!sc*/
+data-styled.g132[id="sc-icavQU"]{content:"hXMdUD,"}/*!sc*/
+.buduLu{font-family:Roboto,sans-serif;font-size:14px;font-weight:400;line-height:1.5em;color:#333333;display:flex;position:relative;text-align:left;-webkit-font-smoothing:antialiased;font-smoothing:antialiased;text-rendering:optimizeSpeed!important;tap-highlight-color:rgba(0, 0, 0, 0);text-size-adjust:100%;}/*!sc*/
+.buduLu *{box-sizing:border-box;-webkit-tap-highlight-color:rgba(255, 255, 255, 0);}/*!sc*/
+data-styled.g133[id="sc-kXNbxj"]{content:"buduLu,"}/*!sc*/
+.eLZvZP{z-index:1;position:relative;overflow:hidden;width:calc(100% - 260px);contain:layout;}/*!sc*/
+@media print,screen and (max-width: 50rem){.eLZvZP{width:100%;}}/*!sc*/
+data-styled.g134[id="sc-dUgsUm"]{content:"eLZvZP,"}/*!sc*/
+.dKumiZ{background:#263238;position:absolute;top:0;bottom:0;right:0;width:calc((100% - 260px) * 0.4);}/*!sc*/
+@media print,screen and (max-width: 75rem){.dKumiZ{display:none;}}/*!sc*/
+data-styled.g135[id="sc-dJOOoR"]{content:"dKumiZ,"}/*!sc*/
+.konpZj{padding:5px 0;}/*!sc*/
+data-styled.g136[id="sc-hVDPkQ"]{content:"konpZj,"}/*!sc*/
+.exHFPa{width:calc(100% - 40px);box-sizing:border-box;margin:0 20px;padding:5px 10px 5px 20px;border:0;border-bottom:1px solid #e1e1e1;font-family:Roboto,sans-serif;font-weight:bold;font-size:13px;color:#333333;background-color:transparent;outline:none;}/*!sc*/
+data-styled.g137[id="sc-kRquRf"]{content:"exHFPa,"}/*!sc*/
+.ghCQVp{position:absolute;left:20px;height:1.8em;width:0.9em;}/*!sc*/
+.ghCQVp path{fill:#333333;}/*!sc*/
+data-styled.g138[id="sc-dNJMoi"]{content:"ghCQVp,"}/*!sc*/
+</style>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+</head>
+
+<body>
+  
+      <div id="redoc"><div class="sc-kXNbxj buduLu redoc-wrap"><div class="sc-dQluUV dYKZdB menu-content" style="top:0px;height:calc(100vh - 0px)"><div role="search" class="sc-hVDPkQ konpZj"><svg class="sc-dNJMoi ghCQVp search-icon" version="1.1" viewBox="0 0 1000 1000" x="0px" xmlns="http://www.w3.org/2000/svg" y="0px"><path d="M968.2,849.4L667.3,549c83.9-136.5,66.7-317.4-51.7-435.6C477.1-25,252.5-25,113.9,113.4c-138.5,138.3-138.5,362.6,0,501C219.2,730.1,413.2,743,547.6,666.5l301.9,301.4c43.6,43.6,76.9,14.9,104.2-12.4C981,928.3,1011.8,893,968.2,849.4z M524.5,522c-88.9,88.7-233,88.7-321.8,0c-88.9-88.7-88.9-232.6,0-321.3c88.9-88.7,233-88.7,321.8,0C613.4,289.4,613.4,433.3,524.5,522z"></path></svg><input placeholder="Search..." aria-label="Search" type="text" class="sc-kRquRf exHFPa search-input" value=""/></div><div class="sc-eeWQrC fQPNEB scrollbar-container undefined"><ul role="menu" class="sc-kTgNvW iDUoBi"><li tabindex="0" depth="1" data-item-id="tag/ニアミス管理システム" role="menuitem" class="sc-buGIZP dPFZel"><label class="sc-dXLCDc bSLObm -depth1"><span width="calc(100% - 38px)" title="ニアミス管理システム" class="sc-fOHhFR kXFfzE">ニアミス管理システム</span><svg class="sc-cXrvCr fDJPYf" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-kTgNvW duzLBj"><li tabindex="0" depth="2" data-item-id="tag/ニアミス管理システム/paths/~1nearmissinfolist/get" role="menuitem" class="sc-buGIZP dPFZel"><label class="sc-dXLCDc kzYPJk -depth2"><span type="get" class="sc-irjSKf grbqCX operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-fOHhFR kXFfzE">C-3-2 ニアミス情報一覧データモデル取得</span></label></li></ul></li><li tabindex="0" depth="1" data-item-id="tag/ニアミス管理システム（データ流通システム取扱対象外）" role="menuitem" class="sc-buGIZP dPFZel"><label class="sc-dXLCDc bSLObm -depth1"><span width="calc(100% - 38px)" title="ニアミス管理システム（データ流通システム取扱対象外）" class="sc-fOHhFR kXFfzE">ニアミス管理システム（データ流通システム取扱対象外）</span><svg class="sc-cXrvCr fDJPYf" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-kTgNvW duzLBj"><li tabindex="0" depth="2" data-item-id="tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1attributes/put" role="menuitem" class="sc-buGIZP dPFZel"><label class="sc-dXLCDc kzYPJk -depth2"><span type="put" class="sc-irjSKf grbqCX operation-type put">put</span><span tabindex="0" width="calc(100% - 38px)" class="sc-fOHhFR kXFfzE">C-3-2 ニアミス抽出属性設定</span></label></li><li tabindex="0" depth="2" data-item-id="tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1categorylist/get" role="menuitem" class="sc-buGIZP dPFZel"><label class="sc-dXLCDc kzYPJk -depth2"><span type="get" class="sc-irjSKf grbqCX operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-fOHhFR kXFfzE">C-3-2 分類情報一覧取得</span></label></li></ul></li></ul><div class="sc-kMKgPS jFSsqK"><a target="_blank" rel="noopener noreferrer" href="https://redocly.com/redoc/">API docs by Redocly</a></div></div></div><div class="sc-icavQU hXMdUD"><div class="sc-dzsMmF cRcNbY"><svg class="" style="transform:translate(2px, -4px) rotate(180deg);transition:transform 0.2s ease" viewBox="0 0 926.23699 573.74994" version="1.1" x="0px" y="0px" width="15" height="15"><g transform="translate(904.92214,-879.1482)"><path d="
+          m -673.67664,1221.6502 -231.2455,-231.24803 55.6165,
+          -55.627 c 30.5891,-30.59485 56.1806,-55.627 56.8701,-55.627 0.6894,
+          0 79.8637,78.60862 175.9427,174.68583 l 174.6892,174.6858 174.6892,
+          -174.6858 c 96.079,-96.07721 175.253196,-174.68583 175.942696,
+          -174.68583 0.6895,0 26.281,25.03215 56.8701,
+          55.627 l 55.6165,55.627 -231.245496,231.24803 c -127.185,127.1864
+          -231.5279,231.248 -231.873,231.248 -0.3451,0 -104.688,
+          -104.0616 -231.873,-231.248 z
+        " fill="currentColor"></path></g></svg><svg class="" style="transform:translate(2px, 4px);transition:transform 0.2s ease" viewBox="0 0 926.23699 573.74994" version="1.1" x="0px" y="0px" width="15" height="15"><g transform="translate(904.92214,-879.1482)"><path d="
+          m -673.67664,1221.6502 -231.2455,-231.24803 55.6165,
+          -55.627 c 30.5891,-30.59485 56.1806,-55.627 56.8701,-55.627 0.6894,
+          0 79.8637,78.60862 175.9427,174.68583 l 174.6892,174.6858 174.6892,
+          -174.6858 c 96.079,-96.07721 175.253196,-174.68583 175.942696,
+          -174.68583 0.6895,0 26.281,25.03215 56.8701,
+          55.627 l 55.6165,55.627 -231.245496,231.24803 c -127.185,127.1864
+          -231.5279,231.248 -231.873,231.248 -0.3451,0 -104.688,
+          -104.0616 -231.873,-231.248 z
+        " fill="currentColor"></path></g></svg></div></div><div class="sc-dUgsUm eLZvZP api-content"><div class="sc-dOfePm kZEgJl"><div class="sc-kFkjun gyiXze"><div class="sc-glJfXD leUrRG api-info"><h1 class="sc-ihGilW sc-kdGFeD cKUApr iENrAO">C-3-2 ニアミス管理システムAPI<!-- --> <span>(<!-- -->1.0.0<!-- -->)</span></h1><p>Download OpenAPI specification<!-- -->:</p><div class="sc-dZnbom sc-eStNqG ewwVxe kiTOLP"></div><div data-role="redoc-summary" html="" class="sc-dZnbom sc-eStNqG ewwVxe kiTOLP"></div><div data-role="redoc-description" html="" class="sc-dZnbom sc-eStNqG ewwVxe kiTOLP"></div></div></div></div><div id="tag/ニアミス管理システム" data-section-id="tag/ニアミス管理システム" class="sc-dOfePm kZEgJl"><div class="sc-kFkjun gyiXze"><div class="sc-glJfXD leUrRG"><h2 class="sc-jRLeyu kRxete"><a class="sc-jXuTBK jnKjlt" href="#tag/ニアミス管理システム" aria-label="tag/ニアミス管理システム"></a>ニアミス管理システム</h2></div></div></div><div id="tag/ニアミス管理システム/paths/~1nearmissinfolist/get" data-section-id="tag/ニアミス管理システム/paths/~1nearmissinfolist/get" class="sc-dOfePm eCkzqu"><div class="sc-kFkjun gyiXze"><div class="sc-glJfXD leUrRG"><h2 class="sc-jRLeyu kRxete"><a class="sc-jXuTBK jnKjlt" href="#tag/ニアミス管理システム/paths/~1nearmissinfolist/get" aria-label="tag/ニアミス管理システム/paths/~1nearmissinfolist/get"></a>C-3-2 ニアミス情報一覧データモデル取得<!-- --> </h2><div class="sc-bvlCfQ jpSYGt"><div html="&lt;p&gt;ニアミス情報一覧データモデルのデータを取得します。&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe kiTOLP"><p>ニアミス情報一覧データモデルのデータを取得します。</p>
+</div></div><div><h5 class="sc-cOPLXt cCiGzA">query<!-- --> Parameters</h5><table class="sc-eagvWJ fahMGi"><tbody><tr class=""><td kind="field" title="id" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">id</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">string</span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU"> <!-- -->&lt;<!-- -->uuid<!-- -->&gt;<!-- --> </span><span> <span class="sc-cbFRR sc-eXqXva hQswnt jAwxyA"> <!-- -->= 36 characters<!-- --> </span></span></div> <div><span class="sc-cbFRR hQswnt"> <!-- -->Example:<!-- --> </span> <span class="sc-cbFRR sc-chKWNQ hQswnt iZKBpI">id=78aa302c-1600-44b3-a331-e4659c0b28a1</span></div><div><div html="&lt;p&gt;データIDフィルター&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>データIDフィルター</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="name" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">name</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">string</span><span> <span class="sc-cbFRR sc-eXqXva hQswnt jAwxyA"> <!-- -->[ 0 .. 4096 ] characters<!-- --> </span></span></div> <div><span class="sc-cbFRR hQswnt"> <!-- -->Example:<!-- --> </span> <span class="sc-cbFRR sc-chKWNQ hQswnt iZKBpI">name=浜松</span></div><div><div html="&lt;p&gt;名称フィルター&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>名称フィルター</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="category" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">category</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">string</span><span> <span class="sc-cbFRR sc-eXqXva hQswnt jAwxyA"> <!-- -->[ 0 .. 4096 ] characters<!-- --> </span></span></div> <div><span class="sc-cbFRR hQswnt"> <!-- -->Example:<!-- --> </span> <span class="sc-cbFRR sc-chKWNQ hQswnt iZKBpI">category=cat12-</span></div><div><div html="&lt;p&gt;分類フィルター&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>分類フィルター</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="summary" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">summary</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">string</span><span> <span class="sc-cbFRR sc-eXqXva hQswnt jAwxyA"> <!-- -->[ 0 .. 4096 ] characters<!-- --> </span></span></div> <div><span class="sc-cbFRR hQswnt"> <!-- -->Example:<!-- --> </span> <span class="sc-cbFRR sc-chKWNQ hQswnt iZKBpI">summary=追い越し</span></div><div><div html="&lt;p&gt;要約フィルター&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>要約フィルター</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="from" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">from</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">string</span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU"> <!-- -->&lt;<!-- -->date-time<!-- -->&gt;<!-- --> </span></div> <div><span class="sc-cbFRR hQswnt"> <!-- -->Example:<!-- --> </span> <span class="sc-cbFRR sc-chKWNQ hQswnt iZKBpI">from=2024-07-10T09:37:58.372Z</span></div><div><div html="&lt;p&gt;発生時刻フィルター。下限値（包含）&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>発生時刻フィルター。下限値（包含）</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="to" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">to</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">string</span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU"> <!-- -->&lt;<!-- -->date-time<!-- -->&gt;<!-- --> </span></div> <div><span class="sc-cbFRR hQswnt"> <!-- -->Example:<!-- --> </span> <span class="sc-cbFRR sc-chKWNQ hQswnt iZKBpI">to=2024-07-11T09:37:58.372Z</span></div><div><div html="&lt;p&gt;発生時刻フィルター。上限値（排他）&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>発生時刻フィルター。上限値（排他）</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="lat0" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">lat0</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">number</span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU"> <!-- -->&lt;<!-- -->double<!-- -->&gt;<!-- --> </span></div> <div><span class="sc-cbFRR hQswnt"> <!-- -->Example:<!-- --> </span> <span class="sc-cbFRR sc-chKWNQ hQswnt iZKBpI">lat0=35.66104767541138</span></div><div><div html="&lt;p&gt;発生地点フィルター。下限緯度（包含）&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>発生地点フィルター。下限緯度（包含）</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="lon0" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">lon0</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">number</span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU"> <!-- -->&lt;<!-- -->double<!-- -->&gt;<!-- --> </span></div> <div><span class="sc-cbFRR hQswnt"> <!-- -->Example:<!-- --> </span> <span class="sc-cbFRR sc-chKWNQ hQswnt iZKBpI">lon0=139.70993603470313</span></div><div><div html="&lt;p&gt;発生地点フィルター。下限経度（包含）&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>発生地点フィルター。下限経度（包含）</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="lat1" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">lat1</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">number</span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU"> <!-- -->&lt;<!-- -->double<!-- -->&gt;<!-- --> </span></div> <div><span class="sc-cbFRR hQswnt"> <!-- -->Example:<!-- --> </span> <span class="sc-cbFRR sc-chKWNQ hQswnt iZKBpI">lat1=35.86104767541138</span></div><div><div html="&lt;p&gt;発生地点フィルター。上限緯度（包含）&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>発生地点フィルター。上限緯度（包含）</p>
+</div></div></div></td></tr><tr class="last "><td kind="field" title="lon1" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">lon1</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">number</span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU"> <!-- -->&lt;<!-- -->double<!-- -->&gt;<!-- --> </span></div> <div><span class="sc-cbFRR hQswnt"> <!-- -->Example:<!-- --> </span> <span class="sc-cbFRR sc-chKWNQ hQswnt iZKBpI">lon1=139.90993603470312</span></div><div><div html="&lt;p&gt;発生地点フィルター。上限経度（包含）&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>発生地点フィルター。上限経度（包含）</p>
+</div></div></div></td></tr></tbody></table></div><div><h3 class="sc-fRzchz ePsDFX">Responses</h3><div><button class="sc-jZkJda owcub"><svg class="sc-cXrvCr jSKTTR" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-dNrSaK eSFldv">200<!-- --> </strong><div html="&lt;p&gt;OK&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG sc-ecLbSZ ewwVxe jZPdSZ dcgeal"><p>OK</p>
+</div></button></div><div><button class="sc-jZkJda imrKRb" disabled=""><strong class="sc-dNrSaK eSFldv">400<!-- --> </strong><div html="&lt;p&gt;リクエスト入力形式不備&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG sc-ecLbSZ ewwVxe jZPdSZ dcgeal"><p>リクエスト入力形式不備</p>
+</div></button></div><div><button class="sc-jZkJda imrKRb" disabled=""><strong class="sc-dNrSaK eSFldv">401<!-- --> </strong><div html="&lt;p&gt;認証トークン不備、有効期限切れ、アクセス権限無し&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG sc-ecLbSZ ewwVxe jZPdSZ dcgeal"><p>認証トークン不備、有効期限切れ、アクセス権限無し</p>
+</div></button></div></div></div><div class="sc-jgmqJh sc-gIIpAQ egscYh brdjDi"><div class="sc-dTdpwD ePBxvF"><button class="sc-ligLZB bgPLGr"><span type="get" class="sc-eeA-dwE hMeoaw http-verb get">get</span><span class="sc-ieSqsC ioopTP">/nearmissinfolist</span><svg class="sc-cXrvCr dOdtJx" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-dMGIQz kCxvuD"><div class="sc-hYvJMy sxQGy"><div html="" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"></div><div tabindex="0" role="button"><div class="sc-lbKftx iPVodL"><span>https://api.server.test/v1</span>/nearmissinfolist</div></div></div></div></div><div><h3 class="sc-jOTjWM dhJZBt"> <!-- -->Response samples<!-- --> </h3><div class="sc-bwSFLc gTnidh" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab:R4ssq:0" aria-selected="true" aria-disabled="false" aria-controls="panel:R4ssq:0" tabindex="0" data-rttab="true">200</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel:R4ssq:0" aria-labelledby="tab:R4ssq:0"><div><div class="sc-brVvGI bVwklo"><span class="sc-fKfBHT gEDIwZ">Content type</span><div class="sc-buNqiq cnTPdi">application/json</div></div><div class="sc-eTAtz eQHTDF"><div class="sc-fowSIr gzsuAn"><div class="sc-ljIkKL jwxgAi"><button><div class="sc-fcNxSY kochun">Copy</div></button><button> Expand all </button><button> Collapse all </button></div><div class="sc-dZnbom ewwVxe sc-gozoIq hnBcqa"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"dataModelType"</span>: <span class="token string">&quot;test1&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"attribute"</span>: <button class="collapser" aria-label="collapse"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"id"</span>: <span class="token string">&quot;78aa302c-1600-44b3-a331-e4659c0b28a1&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"uri"</span>: <span class="token string">&quot;</span><a href="https://hhBucketName.s3.ap-northeast-1.amazonaws.com">https://hhBucketName.s3.ap-northeast-1.amazonaws.com</a><span class="token string">&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"name"</span>: <span class="token string">&quot;ニアミス情報A&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"category"</span>: <span class="token string">&quot;合流&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"summary"</span>: <span class="token string">&quot;ニアミス情報要約をここに記述する。&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"timestamp"</span>: <span class="token string">&quot;2024-07-10T09:37:58.372Z&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"coordinates"</span>: <button class="collapser" aria-label="expand"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"lat"</span>: <span class="token number">35.66104767541138</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"lon"</span>: <span class="token number">139.70993603470313</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"alt"</span>: <span class="token number">34.4</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">]</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"attributes"</span>: <button class="collapser" aria-label="expand"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"key"</span>: <span class="token string">&quot;someAttributeName&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"value"</span>: <span class="token string">&quot;someAttributeValue&quot;</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">]</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"files"</span>: <button class="collapser" aria-label="expand"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"type"</span>: <span class="token string">&quot;egoVehiclePosition&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"size"</span>: <span class="token number">12033065</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"uri"</span>: <span class="token string">&quot;</span><a href="https://hhBucketName.s3.ap-northeast-1.amazonaws.com/hhObjectName?XXXX=YYY&ZZZZ=WWW">https://hhBucketName.s3.ap-northeast-1.amazonaws.com/hhObjectName?XXXX=YYY&amp;ZZZZ=WWW</a><span class="token string">&quot;</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">]</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">]</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div></div></div></div></div></div><div id="tag/ニアミス管理システム（データ流通システム取扱対象外）" data-section-id="tag/ニアミス管理システム（データ流通システム取扱対象外）" class="sc-dOfePm kZEgJl"><div class="sc-kFkjun gyiXze"><div class="sc-glJfXD leUrRG"><h2 class="sc-jRLeyu kRxete"><a class="sc-jXuTBK jnKjlt" href="#tag/ニアミス管理システム（データ流通システム取扱対象外）" aria-label="tag/ニアミス管理システム（データ流通システム取扱対象外）"></a>ニアミス管理システム（データ流通システム取扱対象外）</h2></div></div></div><div id="tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1attributes/put" data-section-id="tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1attributes/put" class="sc-dOfePm eCkzqu"><div class="sc-kFkjun gyiXze"><div class="sc-glJfXD leUrRG"><h2 class="sc-jRLeyu kRxete"><a class="sc-jXuTBK jnKjlt" href="#tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1attributes/put" aria-label="tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1attributes/put"></a>C-3-2 ニアミス抽出属性設定<!-- --> </h2><div class="sc-bvlCfQ jpSYGt"><div html="&lt;p&gt;ニアミス抽出属性データモデルのデータを設定します。&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe kiTOLP"><p>ニアミス抽出属性データモデルのデータを設定します。</p>
+</div></div><h5 class="sc-cOPLXt cCiGzA">Request Body schema: <span class="sc-dSrrqH bFzZBc">application/json</span><div class="sc-cbFRR sc-hMWYck sc-dYdwQA hQswnt cngCif gpUsgs">required</div></h5><div html="&lt;p&gt;Request Body&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe kiTOLP"><p>Request Body</p>
+</div><table class="sc-eagvWJ fahMGi"><tbody><tr class=""><td kind="field" title="id" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">id</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">string</span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU"> <!-- -->&lt;<!-- -->uuid<!-- -->&gt;<!-- --> </span><span> <span class="sc-cbFRR sc-eXqXva hQswnt jAwxyA"> <!-- -->= 36 characters<!-- --> </span></span></div> <div><div html="&lt;p&gt;データID&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>データID</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="category" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">category</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">string</span></div> <div><div html="&lt;p&gt;分類&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>分類</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="timestamp" class="sc-lnQFQe sc-dUwGTt rDKIb dRrKge"><span class="sc-gKcHA-D ibYoJt"></span><span class="property-name">timestamp</span></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL"></span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">string</span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU"> <!-- -->&lt;<!-- -->date-time<!-- -->&gt;<!-- --> </span></div> <div><div html="&lt;p&gt;発生時刻 (ISO 8601形式)&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>発生時刻 (ISO 8601形式)</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="coordinates" class="sc-lnQFQe sc-dUwGTt sc-hcfdRk rDKIb dRrKge fQpXEM"><span class="sc-gKcHA-D ibYoJt"></span><button aria-label="expand coordinates"><span class="property-name">coordinates</span><svg class="sc-cXrvCr zhzlX" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL">Array of </span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">objects</span><span> <span class="sc-cbFRR sc-eXqXva hQswnt jAwxyA"> <!-- -->[ 0 .. 2147483647 ] items<!-- --> </span></span></div> <div><div html="&lt;p&gt;発生地点&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>発生地点</p>
+</div></div></div></td></tr><tr class="last "><td kind="field" title="attributes" class="sc-lnQFQe sc-dUwGTt sc-hcfdRk rDKIb dRrKge fQpXEM"><span class="sc-gKcHA-D ibYoJt"></span><button aria-label="expand attributes"><span class="property-name">attributes</span><svg class="sc-cXrvCr zhzlX" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button></td><td class="sc-eUzcTs fjmjSR"><div><div><span class="sc-cbFRR sc-cQSRAa hQswnt fowkLL">Array of </span><span class="sc-cbFRR sc-hglcZD hQswnt kmboKU">objects</span><span> <span class="sc-cbFRR sc-eXqXva hQswnt jAwxyA"> <!-- -->[ 0 .. 2147483647 ] items<!-- --> </span></span></div> <div><div html="&lt;p&gt;ニアミス属性リスト。発生位置、発生時刻、分類等以外の属性を保持する。&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"><p>ニアミス属性リスト。発生位置、発生時刻、分類等以外の属性を保持する。</p>
+</div></div></div></td></tr></tbody></table><div><h3 class="sc-fRzchz ePsDFX">Responses</h3><div><button class="sc-jZkJda glwmXl" disabled=""><strong class="sc-dNrSaK eSFldv">200<!-- --> </strong><div html="&lt;p&gt;OK&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG sc-ecLbSZ ewwVxe jZPdSZ dcgeal"><p>OK</p>
+</div></button></div><div><button class="sc-jZkJda imrKRb" disabled=""><strong class="sc-dNrSaK eSFldv">400<!-- --> </strong><div html="&lt;p&gt;リクエスト入力形式不備&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG sc-ecLbSZ ewwVxe jZPdSZ dcgeal"><p>リクエスト入力形式不備</p>
+</div></button></div></div></div><div class="sc-jgmqJh sc-gIIpAQ egscYh brdjDi"><div class="sc-dTdpwD ePBxvF"><button class="sc-ligLZB bgPLGr"><span type="put" class="sc-eeA-dwE iAOvt http-verb put">put</span><span class="sc-ieSqsC ioopTP">/attributes</span><svg class="sc-cXrvCr dOdtJx" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-dMGIQz kCxvuD"><div class="sc-hYvJMy sxQGy"><div html="" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"></div><div tabindex="0" role="button"><div class="sc-lbKftx iPVodL"><span>https://api.server.test/v1</span>/attributes</div></div></div></div></div><div><h3 class="sc-jOTjWM dhJZBt"> <!-- -->Request samples<!-- --> </h3><div class="sc-bwSFLc gTnidh" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="react-tabs__tab react-tabs__tab--selected" role="tab" id="tab:R99da:0" aria-selected="true" aria-disabled="false" aria-controls="panel:R99da:0" tabindex="0" data-rttab="true">Payload</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel:R99da:0" aria-labelledby="tab:R99da:0"><div><div class="sc-brVvGI bVwklo"><span class="sc-fKfBHT gEDIwZ">Content type</span><div class="sc-buNqiq cnTPdi">application/json</div></div><div class="sc-eTAtz eQHTDF"><div class="sc-fowSIr gzsuAn"><div class="sc-ljIkKL jwxgAi"><button><div class="sc-fcNxSY kochun">Copy</div></button><button> Expand all </button><button> Collapse all </button></div><div class="sc-dZnbom ewwVxe sc-gozoIq hnBcqa"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"id"</span>: <span class="token string">&quot;78aa302c-1600-44b3-a331-e4659c0b28a1&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"category"</span>: <span class="token string">&quot;合流&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"timestamp"</span>: <span class="token string">&quot;2024-07-10T09:37:58.372Z&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"coordinates"</span>: <button class="collapser" aria-label="collapse"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"lat"</span>: <span class="token number">35.66104767541138</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"lon"</span>: <span class="token number">139.70993603470313</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"alt"</span>: <span class="token number">34.4</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">]</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"attributes"</span>: <button class="collapser" aria-label="collapse"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"key"</span>: <span class="token string">&quot;someAttributeName&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"value"</span>: <span class="token string">&quot;someAttributeValue&quot;</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">]</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div></div></div></div></div></div><div id="tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1categorylist/get" data-section-id="tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1categorylist/get" class="sc-dOfePm eCkzqu"><div class="sc-kFkjun gyiXze"><div class="sc-glJfXD leUrRG"><h2 class="sc-jRLeyu kRxete"><a class="sc-jXuTBK jnKjlt" href="#tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1categorylist/get" aria-label="tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1categorylist/get"></a>C-3-2 分類情報一覧取得<!-- --> </h2><div class="sc-bvlCfQ jpSYGt"><div html="&lt;p&gt;ニアミス情報の分類情報を取得します。&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG ewwVxe kiTOLP"><p>ニアミス情報の分類情報を取得します。</p>
+</div></div><div><h3 class="sc-fRzchz ePsDFX">Responses</h3><div><button class="sc-jZkJda owcub"><svg class="sc-cXrvCr jSKTTR" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-dNrSaK eSFldv">200<!-- --> </strong><div html="&lt;p&gt;OK&lt;/p&gt;
+" class="sc-dZnbom sc-eStNqG sc-ecLbSZ ewwVxe jZPdSZ dcgeal"><p>OK</p>
+</div></button></div></div></div><div class="sc-jgmqJh sc-gIIpAQ egscYh brdjDi"><div class="sc-dTdpwD ePBxvF"><button class="sc-ligLZB bgPLGr"><span type="get" class="sc-eeA-dwE hMeoaw http-verb get">get</span><span class="sc-ieSqsC ioopTP">/categorylist</span><svg class="sc-cXrvCr dOdtJx" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-dMGIQz kCxvuD"><div class="sc-hYvJMy sxQGy"><div html="" class="sc-dZnbom sc-eStNqG ewwVxe gxENBN"></div><div tabindex="0" role="button"><div class="sc-lbKftx iPVodL"><span>https://api.server.test/v1</span>/categorylist</div></div></div></div></div><div><h3 class="sc-jOTjWM dhJZBt"> <!-- -->Response samples<!-- --> </h3><div class="sc-bwSFLc gTnidh" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab:R9pla:0" aria-selected="true" aria-disabled="false" aria-controls="panel:R9pla:0" tabindex="0" data-rttab="true">200</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel:R9pla:0" aria-labelledby="tab:R9pla:0"><div><div class="sc-brVvGI bVwklo"><span class="sc-fKfBHT gEDIwZ">Content type</span><div class="sc-buNqiq cnTPdi">application/json</div></div><div class="sc-eTAtz eQHTDF"><div class="sc-fowSIr gzsuAn"><div class="sc-ljIkKL jwxgAi"><button><div class="sc-fcNxSY kochun">Copy</div></button><button> Expand all </button><button> Collapse all </button></div><div class="sc-dZnbom ewwVxe sc-gozoIq hnBcqa"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"categories"</span>: <button class="collapser" aria-label="collapse"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"label"</span>: <span class="token string">&quot;カットイン&quot;</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">]</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div></div></div></div></div></div></div><div class="sc-dJOOoR dKumiZ"></div></div></div>
+      <script>
+      const __redoc_state = {"menu":{"activeItemIdx":-1},"spec":{"data":{"openapi":"3.0.3","info":{"title":"C-3-2 ニアミス管理システムAPI","version":"1.0.0"},"servers":[{"url":"https://api.server.test/v1"}],"paths":{"/nearmissinfolist":{"get":{"tags":["ニアミス管理システム"],"summary":"C-3-2 ニアミス情報一覧データモデル取得","description":"ニアミス情報一覧データモデルのデータを取得します。","parameters":[{"name":"id","in":"query","description":"データIDフィルター","schema":{"type":"string","format":"uuid","minLength":36,"maxLength":36,"example":"78aa302c-1600-44b3-a331-e4659c0b28a1"}},{"name":"name","in":"query","description":"名称フィルター","schema":{"type":"string","minLength":0,"maxLength":4096,"example":"浜松"}},{"name":"category","in":"query","description":"分類フィルター","schema":{"type":"string","minLength":0,"maxLength":4096,"example":"cat12-"}},{"name":"summary","in":"query","description":"要約フィルター","schema":{"type":"string","minLength":0,"maxLength":4096,"example":"追い越し"}},{"name":"from","in":"query","description":"発生時刻フィルター。下限値（包含）","schema":{"type":"string","format":"date-time","example":"2024-07-10T09:37:58.372Z"}},{"name":"to","in":"query","description":"発生時刻フィルター。上限値（排他）","schema":{"type":"string","format":"date-time","example":"2024-07-11T09:37:58.372Z"}},{"name":"lat0","in":"query","description":"発生地点フィルター。下限緯度（包含）","schema":{"type":"number","format":"double","example":35.66104767541138}},{"name":"lon0","in":"query","description":"発生地点フィルター。下限経度（包含）","schema":{"type":"number","format":"double","example":139.70993603470313}},{"name":"lat1","in":"query","description":"発生地点フィルター。上限緯度（包含）","schema":{"type":"number","format":"double","example":35.86104767541138}},{"name":"lon1","in":"query","description":"発生地点フィルター。上限経度（包含）","schema":{"type":"number","format":"double","example":139.90993603470312}}],"responses":{"200":{"description":"OK","content":{"application/json":{"schema":{"$ref":"#/components/schemas/nearMissInfoList"}}}},"400":{"description":"リクエスト入力形式不備"},"401":{"description":"認証トークン不備、有効期限切れ、アクセス権限無し"}}}},"/attributes":{"put":{"tags":["ニアミス管理システム（データ流通システム取扱対象外）"],"summary":"C-3-2 ニアミス抽出属性設定","description":"ニアミス抽出属性データモデルのデータを設定します。","requestBody":{"description":"Request Body","required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/attributes"}}}},"responses":{"200":{"description":"OK"},"400":{"description":"リクエスト入力形式不備"}}}},"/categorylist":{"get":{"tags":["ニアミス管理システム（データ流通システム取扱対象外）"],"summary":"C-3-2 分類情報一覧取得","description":"ニアミス情報の分類情報を取得します。","responses":{"200":{"description":"OK","content":{"application/json":{"schema":{"$ref":"#/components/schemas/categorylist"}}}}}}}},"components":{"schemas":{"authentication.Information":{"$ref":"#/components/schemas/information"},"authentication.Token":{"$ref":"#/components/schemas/token"},"dataModel.attributes":{"$ref":"#/components/schemas/attributes"},"dataModel.categorylist":{"$ref":"#/components/schemas/categorylist"},"dataModel.nearMissInfoList":{"$ref":"#/components/schemas/nearMissInfoList"},"nearMissInfoList":{"required":["dataModelType","name","attribute"],"type":"object","description":"ニアミス情報リスト","properties":{"dataModelType":{"type":"string","description":"データモデルタイプ","enum":["test1","test2"],"example":"test1"},"attribute":{"type":"array","description":"ニアミス情報リスト","minItems":0,"maxItems":2147483647,"items":{"type":"object","description":"ニアミス情報","required":["id"],"properties":{"id":{"type":"string","format":"uuid","description":"データID","minLength":36,"maxLength":36,"example":"78aa302c-1600-44b3-a331-e4659c0b28a1"},"uri":{"type":"string","description":"データフォルダURI","minlength":1,"maxlength":4096,"example":"https://hhBucketName.s3.ap-northeast-1.amazonaws.com"},"name":{"type":"string","minLength":1,"maxLength":4096,"description":"名称","example":"ニアミス情報A"},"category":{"type":"string","description":"分類","minlength":0,"maxlength":4096,"example":"合流"},"summary":{"type":"string","minLength":0,"maxLength":4096,"description":"要約","example":"ニアミス情報要約をここに記述する。"},"timestamp":{"type":"string","format":"date-time","description":"発生時刻 (ISO 8601形式)","example":"2024-07-10T09:37:58.372Z"},"coordinates":{"type":"array","description":"発生地点","minItems":0,"maxItems":2147483647,"items":{"type":"object","required":["lat","lon"],"properties":{"lat":{"type":"number","description":"緯度[degree]","format":"double","minimum":-90,"maximum":90,"example":35.66104767541138},"lon":{"type":"number","description":"経度[degree]","format":"double","minimum":-180,"maximum":180,"example":139.70993603470313},"alt":{"type":"number","description":"標高[m]","format":"double","minimum":-10000000,"maximum":10000000,"example":34.4}}}},"attributes":{"type":"array","description":"ニアミス属性リスト。発生位置、発生時刻、分類等以外の属性を保持する。","minItems":0,"maxItems":2147483647,"items":{"type":"object","required":["key","value"],"properties":{"key":{"type":"string","minLength":1,"maxLength":4096,"example":"someAttributeName"},"value":{"type":"string","minLength":1,"maxLength":2147483647,"example":"someAttributeValue"}}}},"files":{"type":"array","minItems":0,"maxItems":2147483647,"items":{"type":"object","required":["type","size","uri"],"properties":{"type":{"type":"string","minLength":0,"maxLength":4096,"description":"ファイル種別","example":"egoVehiclePosition"},"size":{"type":"number","format":"int32","description":"ファイルサイズ[bytes]","minimum":0,"maximum":2147483647,"example":12033065},"uri":{"type":"string","minLength":0,"maxLength":4096,"description":"ファイルURI","example":"https://hhBucketName.s3.ap-northeast-1.amazonaws.com/hhObjectName?XXXX=YYY&ZZZZ=WWW"}}}}}}}}},"attributes":{"description":"C-3-2 ニアミス抽出属性データモデル（データ流通システム取扱対象外）","type":"object","properties":{"id":{"type":"string","format":"uuid","description":"データID","minLength":36,"maxLength":36,"example":"78aa302c-1600-44b3-a331-e4659c0b28a1"},"category":{"type":"string","description":"分類","maxlength":0,"minlength":4096,"example":"合流"},"timestamp":{"type":"string","format":"date-time","description":"発生時刻 (ISO 8601形式)","example":"2024-07-10T09:37:58.372Z"},"coordinates":{"type":"array","description":"発生地点","minItems":0,"maxItems":2147483647,"items":{"type":"object","required":["lat","lon"],"properties":{"lat":{"type":"number","description":"緯度[degree]","format":"double","minimum":-90,"maximum":90,"example":35.66104767541138},"lon":{"type":"number","description":"経度[degree]","format":"double","minimum":-180,"maximum":180,"example":139.70993603470313},"alt":{"type":"number","description":"標高[m]","format":"double","minimum":-10000000,"maximum":10000000,"example":34.4}}}},"attributes":{"type":"array","description":"ニアミス属性リスト。発生位置、発生時刻、分類等以外の属性を保持する。","minItems":0,"maxItems":2147483647,"items":{"type":"object","required":["key","value"],"properties":{"key":{"type":"string","minLength":1,"maxLength":4096,"example":"someAttributeName"},"value":{"type":"string","minLength":1,"maxLength":2147483647,"example":"someAttributeValue"}}}}}},"categorylist":{"type":"object","description":"C-3-2 ニアミス分類情報一覧取得（データ流通システム取扱対象外）","properties":{"categories":{"type":"array","minItems":0,"maxItems":2147483647,"items":{"type":"object","properties":{"label":{"type":"string","description":"分類","minLength":1,"maxLength":4096,"example":"カットイン"}}}}}},"information":{"required":["accountPassword","operatorAccountId"],"type":"object","properties":{"accountPassword":{"type":"string","description":"認証アカウントパスワード","example":"password"},"operatorAccountId":{"type":"string","description":"認証アカウントID","example":"account1234"}}},"token":{"type":"object","properties":{"accessToken":{"type":"string","description":"アクセストークン","example":"eyJhbGciOiJSUzI1NiIsImtpZCI6IjAzZDA3YmJjM2Q3NWM2OTQyNzUxMGY2MTc0ZWIyZjE2NTQ3ZDRhN2QiLCJ0eXAiOiJKV1QifQ.eyJvcGVyYXRvcl9pZCI6IjBmMWViYTkwLTgzOWYtNDA1OS1iOWNiLTcwY2JhZjQ5MDIzOSIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9kYXRhLXNwYWNlcy1kZXYtajh3bHB1N2oiLCJhdWQiOiJkYXRhLXNwYWNlcy1kZXYtajh3bHB1N2oiLCJhdXRoX3RpbWUiOjE2OTc3NjU3OTEsInVzZXJfaWQiOiI4NmMzNDE2Yy00MDA0LTRjNGUtYTNlNy00MGJiNjY5YTZmNWIiLCJzdWIiOiI4NmMzNDE2Yy00MDA0LTRjNGUtYTNlNy00MGJiNjY5YTZmNWIiLCJpYXQiOjE2OTc3NjU3OTEsImV4cCI6MTY5Nzc2OTM5MSwiZW1haWwiOiJ0ZXN0ZG90ZF90ZXN0QHNhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsidGVzdGRvdGRfdGVzdEBzYW1wbGUuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.mAe7NTKTiKY-pGYZxvjBejIMpgfgBTz4ymGM2jMDpwBT2aRQCAcV0a2__n3ewgBl1kwR66OcsDq6CbXHu33zRiBGbYehy0aotTb0C81DIGnD__n0w8eYuoXhvp3z2ScOfOPBhCvoA9Eg1Yvk3rgpfQa8eFGCOp1-_RQuiaXo8IqRbg9xgCbo6xaxSvgeup-OHv0tR7IwDmauwCT-RCeU0WxHn6i2YKgUrULFIZSoF8WQuPL0HKEl4-jJbOP2TASTpLyshCDeECq4AaWercYf36A2DZ6udhJSO-lKwPtb5QjGJQbVKd_SINdoMvI2oHvuhzPz5MK4StMCumZ02AZ9sw"},"refreshToken":{"type":"string","description":"リフレッシュトークン","example":"AMf-vBwoYSJKlMfMCujrEBT3FgWmObWOgMtSp8gWj0R4FSWb6XB88kjxdPojhiL8KXjtONi51kG5hNGmvhwmW0Fkoczq8gcOtBUpKBJdagzBKPGGXGuVLuNBH9RkN-CBtKV6FrHVc8exdtQeeSnaGOs-rLYo0EizEyPN_Ysul2NNh2nkwjABgQ-o0_nZxCPZ1gNPtlnd1dZr5hAlIwNn-nO_sI9lIH8LXX04TX_GfzC3tJZj0EXTUeiyUYjv38jRaEf6iBu77zuE"}}}},"securitySchemes":{"ApiKeyAuth":{"type":"apiKey","name":"apiKey","in":"header"},"Authorization":{"type":"http","scheme":"bearer","description":"アクセストークン発行APIで発行したアクセストークン"}}}}},"searchIndex":{"store":["tag/ニアミス管理システム","tag/ニアミス管理システム/paths/~1nearmissinfolist/get","tag/ニアミス管理システム（データ流通システム取扱対象外）","tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1attributes/put","tag/ニアミス管理システム（データ流通システム取扱対象外）/paths/~1categorylist/get"],"index":{"version":"2.3.9","fields":["title","description"],"fieldVectors":[["title/0",[0,0.305]],["description/0",[]],["title/1",[0,0.234,1,0.489]],["description/1",[0,0.203,2,1.089]],["title/2",[0,0.305]],["description/2",[]],["title/3",[0,0.234,1,0.489]],["description/3",[0,0.203,3,1.089]],["title/4",[0,0.234,1,0.489]],["description/4",[0,0.203,4,1.089]]],"invertedIndex":[["",{"_index":0,"title":{"0":{},"1":{},"2":{},"3":{},"4":{}},"description":{"1":{},"3":{},"4":{}}}],["attribut",{"_index":3,"title":{},"description":{"3":{}}}],["c-3-2",{"_index":1,"title":{"1":{},"3":{},"4":{}},"description":{}}],["categorylist",{"_index":4,"title":{},"description":{"4":{}}}],["nearmissinfolist",{"_index":2,"title":{},"description":{"1":{}}}]],"pipeline":[]}},"options":{}};
+
+      var container = document.getElementById('redoc');
+      Redoc.hydrate(__redoc_state, container);
+
+      </script>
+</body>
+
+</html>

@@ -1,0 +1,17 @@
+<td
+  #ellipsisCell
+  class="text-overflow-ellipsis white-space-nowrap overflow-hidden"
+  style="max-width: 250px"
+  [pTooltip]="content"
+  tooltipPosition="bottom"
+  showDelay="150"
+  [autoHide]="false"
+  [tooltipDisabled]="!isOverflownElement"
+>
+  {{ content }}
+  <ng-template #tooltipContent
+    ><div class="text-xs">
+      {{ content }}
+    </div></ng-template
+  >
+</td>

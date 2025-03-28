@@ -1,0 +1,72 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "debug-angular",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:4210",
+      "webRoot": "${workspaceFolder}/packages/frontend",
+      "sourceMaps": true,
+    },
+    {
+      "name": "debug-karma",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:9876",
+      "webRoot": "${workspaceFolder}/packages/frontend",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*"
+      }
+    },
+    {
+      "name": "debug-api",
+      "type": "pwa-node",
+      "request": "launch",
+      "args": ["packages/backend/src/main.ts"],
+      "runtimeArgs": ["--require", "ts-node/register", "--require", "tsconfig-paths/register"],
+      "cwd": "${workspaceRoot}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "NODE_ENV": "local",
+        "PORT": "3000",
+        "TS_NODE_PROJECT": "packages/backend/tsconfig.json",
+        "DB_HOST": "database",
+        "DB_PORT": "5432",
+        "DB_DATABASE": "HHDB",
+        "DB_SCHEMA": "hh",
+        "DB_USERNAME": "postgres",
+        "DB_PASSWORD": "postgres"
+      },
+      "sourceMaps": true,
+      "console": "internalConsole",
+      "outputCapture": "std",
+      "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"]
+    },
+    {
+      "name": "debug-batch",
+      "type": "pwa-node",
+      "request": "launch",
+      "args": ["packages/batch-import/src/main-local.ts"],
+      "runtimeArgs": ["--require", "ts-node/register", "--require", "tsconfig-paths/register"],
+      "cwd": "${workspaceRoot}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "NODE_ENV": "local",
+        "PORT": "4000",
+        "TS_NODE_PROJECT": "packages/backend/tsconfig.json",
+        "DB_HOST": "database",
+        "DB_PORT": "5432",
+        "DB_DATABASE": "HHDB",
+        "DB_SCHEMA": "hh",
+        "DB_USERNAME": "postgres",
+        "DB_PASSWORD": "postgres"
+      },
+      "sourceMaps": true,
+      "console": "internalConsole",
+      "outputCapture": "std",
+      "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"]
+    }
+  ]
+}

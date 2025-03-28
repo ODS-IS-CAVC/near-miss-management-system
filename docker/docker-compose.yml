@@ -1,0 +1,53 @@
+services:
+  app:
+    container_name: nearmiss_manager-app
+    image: nearmiss_manager/app
+    hostname: dmp-digi-line-app
+    build: 
+      context: ./app
+      target: local
+    tty: true
+    volumes:
+      - ../:/workspace:cached
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    ports:
+      - 4210:4200
+      - 3010:3000
+    stdin_open: true
+    env_file:
+      - ../env/.env.development.local
+
+  database:
+    container_name: nearmiss_manager-database
+    image: nearmiss_manager/database
+    tty: true
+    build:
+      context: ./postgres
+    env_file:
+      - ../env/.env.development.local
+    environment:
+      POSTGRES_DB: HHDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+      LANG: ja_JP.utf8
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres/initdb:/docker-entrypoint-initdb.d
+    ports:
+      - 15432:5432
+    hostname: postgres
+
+  localstack:
+    container_name: dmp-digi-line-localstack
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+      - "4572:4572"
+    environment:
+      - SERVICES=iam,apigateway,lambda,rds,cloudformation,cloudwatch,ssm,events,logs,S3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./localstack/volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
